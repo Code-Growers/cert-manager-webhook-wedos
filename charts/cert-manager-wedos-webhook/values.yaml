@@ -13,7 +13,7 @@ certManager:
   serviceAccountName: cert-manager
 
 image:
-  repository: registry.smoula.net/nexus/cert-manager-webhook-wedos
+  repository: ghcr.io/code-growers/cert-manager-webhook-wedos
   tag: latest
   pullPolicy: IfNotPresent
 
