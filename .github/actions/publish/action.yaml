@@ -1,0 +1,47 @@
+name: Helm Publish
+
+env:
+    IMAGE_NAME: cert-manager-webhook-wedos
+    IMAGE_TAG: ${{ github.sha }}
+    IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+    REGISTRY_USER: ${{ github.actor }}
+    REGISTRY_PASSWORD: ${{ github.token }}
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout push-to-registry action github repository
+      - name: Checkout Push to Registry action
+        uses: actions/checkout@v4
+
+      - name: Install latest podman
+        if: matrix.install_latest
+        run: |
+          bash .github/install_latest_podman.sh
+
+      # Build image using Buildah action
+      - name: Build Image
+        id: build_image
+        uses: redhat-actions/buildah-build@v2
+        run: |
+          docker build . --file Dockerfile --tag $IMAGE_REGISTRY/$IMAGE_NAME:${IMAGE_TAG} 
+          docker tag $IMAGE_REGISTRY/$IMAGE_NAME:${IMAGE_TAG} $IMAGE_REGISTRY/$IMAGE_NAME:latest
+
+      - name: Push Docker image
+        run: |
+          docker push $IMAGE_REGISTRY/$IMAGE_NAME:${IMAGE_TAG}
+          docker push $IMAGE_REGISTRY/$IMAGE_NAME:latest
+
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: J12934/helm-gh-pages-action@master
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
