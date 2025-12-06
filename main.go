@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"time"
 
-	"blob.team/cert-manager-webhook-wedos/wedos"
+	"github.com/Code-Growers/cert-manager-webhook-wedos/wedos"
 
 	acme "github.com/cert-manager/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/cert-manager/cert-manager/pkg/acme/webhook/cmd"
@@ -23,6 +24,7 @@ import (
 var GroupName = os.Getenv("GROUP_NAME")
 
 func main() {
+	slog.Info("Starting webhook")
 	if GroupName == "" {
 		panic("GROUP_NAME must be specified")
 	}
@@ -47,7 +49,7 @@ func (e *wedosProviderSolver) Name() string {
 
 func (e *wedosProviderSolver) validate(cfg *wedosProviderConfig) error {
 	// Try to load the API key
-	if cfg.APIKeySecretRef.LocalObjectReference.Name == "" {
+	if cfg.APIKeySecretRef.Name == "" {
 		return errors.New("API token field were not provided")
 	}
 
@@ -68,7 +70,7 @@ func (e *wedosProviderSolver) provider(ch *acme.ChallengeRequest) (*wedos.DNSPro
 	defer ctxCancel()
 	sec, err := e.client.CoreV1().
 		Secrets(ch.ResourceNamespace).
-		Get(ctx, cfg.APIKeySecretRef.LocalObjectReference.Name, metaV1.GetOptions{})
+		Get(ctx, cfg.APIKeySecretRef.Name, metaV1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +78,7 @@ func (e *wedosProviderSolver) provider(ch *acme.ChallengeRequest) (*wedos.DNSPro
 	if !ok {
 		return nil, fmt.Errorf("key %q not found in secret \"%s/%s\"",
 			cfg.APIKeySecretRef.Key,
-			cfg.APIKeySecretRef.LocalObjectReference.Name,
+			cfg.APIKeySecretRef.Name,
 			ch.ResourceNamespace)
 	}
 

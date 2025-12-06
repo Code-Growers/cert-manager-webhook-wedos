@@ -53,10 +53,10 @@ type DNSRowRequest struct {
 }
 
 type APIRequest struct {
-	User    string      `json:"user,omitempty"`
-	Auth    string      `json:"auth,omitempty"`
-	Command string      `json:"command,omitempty"`
-	Data    interface{} `json:"data,omitempty"`
+	User    string `json:"user,omitempty"`
+	Auth    string `json:"auth,omitempty"`
+	Command string `json:"command,omitempty"`
+	Data    any    `json:"data,omitempty"`
 }
 
 type Client struct {
@@ -78,7 +78,7 @@ func NewClient(username string, password string) *Client {
 // GetRecords lists all the records in the zone.
 // https://kb.wedos.com/en/wapi-api-interface/wapi-command-dns-rows-list/
 func (c *Client) GetRecords(ctx context.Context, zone string) ([]DNSRow, error) {
-	payload := map[string]interface{}{
+	payload := map[string]any{
 		"domain": dns01.UnFqdn(zone),
 	}
 
@@ -146,7 +146,7 @@ func (c *Client) DeleteRecord(ctx context.Context, zone string, recordID string)
 // Commit not really required, all changes will be auto-committed after 5 minutes.
 // https://kb.wedos.com/en/wapi-api-interface/wapi-command-dns-domain-commit/
 func (c *Client) Commit(ctx context.Context, zone string) error {
-	payload := map[string]interface{}{
+	payload := map[string]any{
 		"name": dns01.UnFqdn(zone),
 	}
 
@@ -167,8 +167,8 @@ func (c *Client) Ping(ctx context.Context) error {
 	return nil
 }
 
-func (c *Client) do(ctx context.Context, command string, payload interface{}) (*ResponsePayload, error) {
-	requestObject := map[string]interface{}{
+func (c *Client) do(ctx context.Context, command string, payload any) (*ResponsePayload, error) {
+	requestObject := map[string]any{
 		"request": APIRequest{
 			User:    c.username,
 			Auth:    authToken(c.username, c.password),

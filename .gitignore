@@ -17,3 +17,5 @@ cert-manager-webhook-wedos
 # Make artifacts
 _out
 _test
+
+.direnv
