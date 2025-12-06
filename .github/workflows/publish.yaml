@@ -32,12 +32,24 @@ jobs:
           docker push $IMAGE:${IMAGE_TAG}
           docker push $IMAGE:latest
 
-  publish:
+  release:
+    # depending on default permission settings for your org (contents being read-only or read-write for workloads), you will have to add permissions
+    # see: https://docs.github.com/en/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Push to Registry action
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - uses: J12934/helm-gh-pages-action@master
         with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.7.0
+        env:
+          CR_TOKEN: "${{ secrets.ACCESS_TOKEN }}"
