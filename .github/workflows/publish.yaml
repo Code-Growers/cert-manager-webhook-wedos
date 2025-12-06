@@ -4,7 +4,6 @@ env:
     IMAGE_NAME: cert-manager-webhook-wedos
     IMAGE_TAG: ${{ github.sha }}
     IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-    IMAGE: $IMAGE_REGISTRY/$IMAGE_NAME
     REGISTRY_USER: ${{ github.actor }}
     REGISTRY_PASSWORD: ${{ github.token }}
 
@@ -22,7 +21,7 @@ jobs:
 
       - name: lowercase image name
         run: |
-          echo "IMAGE=`echo $IMAGE | tr '[:upper:]' '[:lower:]'`" >>${GITHUB_ENV}
+          echo "IMAGE=`echo ${IMAGE_REGISTRY}/${IMAGE_NAME} | tr '[:upper:]' '[:lower:]'`" >>${GITHUB_ENV}
 
       - name: Build Image
         run: |
