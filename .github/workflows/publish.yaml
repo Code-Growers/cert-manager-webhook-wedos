@@ -28,6 +28,7 @@ jobs:
 
       - name: Push Docker image
         run: |
+          echo $ACCESS_TOKEN | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker push $IMAGE:${IMAGE_TAG}
           docker push $IMAGE:latest
 
@@ -39,4 +40,4 @@ jobs:
 
       - uses: J12934/helm-gh-pages-action@master
         with:
-          access-token: ${{ secrets.GITHUB_TOKEN }}
+          access-token: ${{ secrets.ACCESS_TOKEN }}
