@@ -16,19 +16,10 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      # Checkout push-to-registry action github repository
       - name: Checkout Push to Registry action
         uses: actions/checkout@v4
 
-      - name: Install latest podman
-        if: matrix.install_latest
-        run: |
-          bash .github/install_latest_podman.sh
-
-      # Build image using Buildah action
       - name: Build Image
-        id: build_image
-        uses: redhat-actions/buildah-build@v2
         run: |
           docker build . --file Dockerfile --tag $IMAGE_REGISTRY/$IMAGE_NAME:${IMAGE_TAG} 
           docker tag $IMAGE_REGISTRY/$IMAGE_NAME:${IMAGE_TAG} $IMAGE_REGISTRY/$IMAGE_NAME:latest
@@ -41,7 +32,9 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout Push to Registry action
+        uses: actions/checkout@v4
+
       - uses: J12934/helm-gh-pages-action@master
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
