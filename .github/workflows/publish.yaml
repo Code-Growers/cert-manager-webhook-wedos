@@ -4,8 +4,6 @@ env:
     IMAGE_NAME: cert-manager-webhook-wedos
     IMAGE_TAG: ${{ github.sha }}
     IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-    REGISTRY_USER: ${{ github.actor }}
-    REGISTRY_PASSWORD: ${{ github.token }}
 
 on:
   push:
@@ -41,4 +39,4 @@ jobs:
 
       - uses: J12934/helm-gh-pages-action@master
         with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
+          access-token: ${{ secrets.GITHUB_TOKEN }}
