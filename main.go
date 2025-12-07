@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log/slog"
 	"os"
 	"time"
 
@@ -24,7 +23,6 @@ import (
 var GroupName = os.Getenv("GROUP_NAME")
 
 func main() {
-	slog.Info("Starting webhook")
 	if GroupName == "" {
 		panic("GROUP_NAME must be specified")
 	}
